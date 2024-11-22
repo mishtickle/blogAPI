@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Blog API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+        .requirement::before {
+            content: "•";
+            margin-right: 5px;
+            color: #dc3545;
+        }
+        .requirement.valid::before {
+            content: "✓";
+            color: #28a745;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        .success-message {
+            color: #28a745;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="password-requirements">
+                    <div class="requirement" id="length">At least 8 characters</div>
+                    <div class="requirement" id="uppercase">At least one uppercase letter</div>
+                    <div class="requirement" id="lowercase">At least one lowercase letter</div>
+                    <div class="requirement" id="number">At least one number</div>
+                    <div class="requirement" id="special">At least one special character</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="secret">Secret Code (Optional)</label>
+                <input type="password" id="secret" name="secret">
+                <div class="password-requirements">
+                    <div>Leave empty for Reader role</div>
+                </div>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Remember me</label>
+            </div>
+            <button type="submit" disabled>Register</button>
+        </form>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+    </div>
+    <script>
+        const form = document.getElementById('registerForm');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const requirements = {
+            length: { regex: /.{8,}/, element: document.getElementById('length') },
+            uppercase: { regex: /[A-Z]/, element: document.getElementById('uppercase') },
+            lowercase: { regex: /[a-z]/, element: document.getElementById('lowercase') },
+            number: { regex: /[0-9]/, element: document.getElementById('number') },
+            special: { regex: /[!@#$%^&*(),.?":{}|<>]/, element: document.getElementById('special') }
+        };
+
+        // Check password requirements
+        function checkPassword() {
+            const pwd = password.value;
+            let valid = true;
+
+            for (const [key, requirement] of Object.entries(requirements)) {
+                const isValid = requirement.regex.test(pwd);
+                requirement.element.classList.toggle('valid', isValid);
+                valid = valid && isValid;
+            }
+
+            const passwordsMatch = pwd === confirmPassword.value;
+            submitButton.disabled = !valid || !passwordsMatch || !pwd || !confirmPassword.value;
+        }
+
+        password.addEventListener('input', checkPassword);
+        confirmPassword.addEventListener('input', checkPassword);
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: password.value,
+                secret: document.getElementById('secret').value
+            };
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('successMessage').textContent = 'Registration successful! Redirecting to login...';
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                    
+                    // Store role if provided in response
+                    if (data.role) {
+                        localStorage.setItem('userRole', data.role);
+                    }
+                    
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } else {
+                    document.getElementById('errorMessage').textContent = data.message || 'Registration failed. Please try again.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'An error occurred. Please try again.';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+            }
+        });
+
+        // Check for remembered user data
+        window.addEventListener('load', () => {
+            const rememberedEmail = localStorage.getItem('userEmail');
+            const rememberedName = localStorage.getItem('userName');
+            
+            if (rememberedEmail && rememberedName) {
+                document.getElementById('email').value = rememberedEmail;
+                document.getElementById('name').value = rememberedName;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+    </script>
+</body>
+</html>

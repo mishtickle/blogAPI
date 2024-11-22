@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reader Dashboard - Blog API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .post-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .post-title {
+            margin: 0 0 1rem 0;
+            color: #333;
+        }
+        .post-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .post-content {
+            color: #444;
+            line-height: 1.6;
+        }
+        .comments {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        .comment-form {
+            margin-top: 1rem;
+        }
+        .comment-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            resize: vertical;
+        }
+        .comment-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .comment-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Reader Dashboard</h1>
+        <div class="user-info">
+            <span id="userName"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="posts" id="postsContainer">
+            <!-- Posts will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!token || userRole !== 'READER') {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            window.location.href = '/login.html';
+        }
+
+        // Load posts
+        async function loadPosts() {
+            try {
+                const response = await fetch('/api/posts', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const posts = await response.json();
+                
+                const postsContainer = document.getElementById('postsContainer');
+                postsContainer.innerHTML = posts.map(post => `
+                    <div class="post-card">
+                        <h2 class="post-title">${post.title}</h2>
+                        <div class="post-meta">
+                            By ${post.author.name} on ${new Date(post.createdAt).toLocaleDateString()}
+                        </div>
+                        <div class="post-content">
+                            ${post.content}
+                        </div>
+                        <div class="comments">
+                            <h3>Comments (${post.comments.length})</h3>
+                            ${post.comments.map(comment => `
+                                <div class="comment">
+                                    <p>${comment.content}</p>
+                                    <small>By ${comment.author.name}</small>
+                                </div>
+                            `).join('')}
+                            <form class="comment-form" onsubmit="addComment(event, ${post.id})">
+                                <textarea placeholder="Add a comment..." required></textarea>
+                                <button type="submit">Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        }
+
+        // Add comment
+        async function addComment(event, postId) {
+            event.preventDefault();
+            const form = event.target;
+            const content = form.querySelector('textarea').value;
+
+            try {
+                const response = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        content,
+                        postId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to add comment');
+                }
+
+                form.reset();
+                loadPosts(); // Reload posts to show new comment
+            } catch (error) {
+                console.error('Error adding comment:', error);
+            }
+        }
+
+        // Initialize
+        checkAuth();
+        loadPosts();
+    </script>
+</body>
+</html>

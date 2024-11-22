@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Platform - Home</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --background-color: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: #333;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline {
+            border: 1px solid white;
+            color: white;
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-card h3 {
+            margin: 0 0 1rem 0;
+            color: var(--primary-color);
+        }
+
+        .recent-posts {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .post-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .post-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .archive-section {
+            margin-top: 3rem;
+        }
+
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .archive-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .archive-card h4 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .post-count {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .search-bar {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
+            padding: 0.5rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+            .post-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .archive-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .post-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-4px);
+        }
+        .post-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .post-title {
+            margin: 0 0 1rem 0;
+            color: #333;
+        }
+        .post-excerpt {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin: 1rem 0;
+            font-size: 1rem;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .post-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            font-size: 1rem;
+            color: #333;
+            overflow-wrap: break-word;
+        }
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        .comments-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .error-state {
+            text-align: center;
+            padding: 2rem;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+        .retry-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .no-posts {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Exploring Life, One Post at a Time</h1>
+            <div class="auth-buttons" id="authButtons">
+                <a href="/login.html" class="btn btn-outline">Login</a>
+                <a href="/register.html" class="btn btn-outline">Register</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="hero">
+            <h2>Explore Our Blog Categories</h2>
+            <p>Discover articles on various topics written by our community</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search posts...">
+            <button onclick="searchPosts()">Search</button>
+        </div>
+
+        <div class="categories" id="categories">
+            <!-- Categories will be loaded here -->
+        </div>
+
+        <div class="recent-posts">
+            <h2>Recent Posts</h2>
+            <div class="post-grid" id="recentPosts">
+                <!-- Recent posts will be loaded here -->
+            </div>
+        </div>
+
+        <div class="archive-section">
+            <h2>Archives</h2>
+            <div class="archive-grid" id="archives">
+                <!-- Archives will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // Check authentication status
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/auth/verify', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        currentUser = data;
+                        updateAuthButtons(data.name);
+                    } else {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userRole');
+                    }
+                } catch (error) {
+                    console.error('Auth check error:', error);
+                }
+            }
+        }
+
+        // Update auth buttons
+        function updateAuthButtons(userName) {
+            const authButtons = document.getElementById('authButtons');
+            authButtons.textContent = ''; // Clear existing content
+
+            if (userName) {
+                const welcomeSpan = document.createElement('span');
+                welcomeSpan.style.color = 'white';
+                welcomeSpan.style.marginRight = '1rem';
+                welcomeSpan.textContent = `Welcome, ${userName}`;
+
+                const logoutBtn = document.createElement('button');
+                logoutBtn.className = 'btn btn-outline';
+                logoutBtn.onclick = logout;
+                logoutBtn.textContent = 'Logout';
+
+                authButtons.appendChild(welcomeSpan);
+                authButtons.appendChild(logoutBtn);
+            } else {
+                const loginLink = document.createElement('a');
+                loginLink.href = '/login.html';
+                loginLink.className = 'btn btn-outline';
+                loginLink.textContent = 'Login';
+
+                const registerLink = document.createElement('a');
+                registerLink.href = '/register.html';
+                registerLink.className = 'btn btn-outline';
+                registerLink.textContent = 'Register';
+
+                authButtons.appendChild(loginLink);
+                authButtons.appendChild(registerLink);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            currentUser = null;
+            updateAuthButtons();
+            loadData();
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+            };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const categories = await response.json();
+                
+                const categoriesContainer = document.getElementById('categories');
+                categoriesContainer.textContent = ''; // Clear existing content
+
+                categories.forEach(category => {
+                    const categoryCard = document.createElement('div');
+                    categoryCard.className = 'category-card';
+
+                    const title = document.createElement('h3');
+                    title.textContent = category.name;
+
+                    const description = document.createElement('p');
+                    description.textContent = category.description || '';
+
+                    const link = document.createElement('a');
+                    link.href = `/index.html?category=${category.slug}`;
+                    link.className = 'btn';
+                    link.textContent = 'View Posts';
+
+                    categoryCard.appendChild(title);
+                    categoryCard.appendChild(description);
+                    categoryCard.appendChild(link);
+                    categoriesContainer.appendChild(categoryCard);
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load recent posts
+        async function loadRecentPosts() {
+            try {
+                const recentPostsContainer = document.getElementById('recentPosts');
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'loading';
+                loadingDiv.textContent = 'Loading posts...';
+                recentPostsContainer.textContent = ''; // Clear existing content
+                recentPostsContainer.appendChild(loadingDiv);
+
+                const response = await fetch('/api/posts/public?limit=6');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const posts = data.posts;
+                
+                recentPostsContainer.textContent = ''; // Clear loading message
+
+                if (!posts || posts.length === 0) {
+                    const noPostsMsg = document.createElement('p');
+                    noPostsMsg.className = 'no-posts';
+                    noPostsMsg.textContent = 'No posts found.';
+                    recentPostsContainer.appendChild(noPostsMsg);
+                    return;
+                }
+
+                const postsGrid = document.createElement('div');
+                postsGrid.className = 'posts-grid';
+
+                posts.forEach(post => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+
+                    const meta = document.createElement('div');
+                    meta.className = 'post-meta';
+
+                    const category = document.createElement('span');
+                    category.className = 'category';
+                    category.textContent = post.category?.name || 'Uncategorized';
+
+                    const author = document.createElement('span');
+                    author.className = 'author';
+                    author.textContent = `By ${post.author?.name || 'Anonymous'}`;
+
+                    const date = document.createElement('span');
+                    date.className = 'date';
+                    date.textContent = formatDate(post.createdAt);
+
+                    meta.appendChild(category);
+                    meta.appendChild(author);
+                    meta.appendChild(date);
+
+                    const title = document.createElement('h3');
+                    title.className = 'post-title';
+                    title.textContent = post.title;
+
+                    const excerpt = document.createElement('p');
+                    excerpt.className = 'post-excerpt';
+                    excerpt.textContent = post.content ? 
+                        post.content.substring(0, 150) + '...' : 
+                        'No content available';
+
+                    const footer = document.createElement('div');
+                    footer.className = 'post-footer';
+
+                    const comments = document.createElement('span');
+                    comments.className = 'comments-count';
+                    comments.textContent = `${post.comments?.length || 0} Comments`;
+
+                    const readMore = document.createElement('a');
+                    readMore.href = `/post.html?slug=${post.slug}`;
+                    readMore.className = 'btn btn-primary';
+                    readMore.textContent = 'Read More';
+
+                    footer.appendChild(comments);
+                    footer.appendChild(readMore);
+
+                    postCard.appendChild(meta);
+                    postCard.appendChild(title);
+                    postCard.appendChild(excerpt);
+                    postCard.appendChild(footer);
+
+                    postsGrid.appendChild(postCard);
+                });
+
+                recentPostsContainer.appendChild(postsGrid);
+            } catch (error) {
+                console.error('Error loading recent posts:', error);
+                recentPostsContainer.textContent = ''; // Clear existing content
+
+                const errorState = document.createElement('div');
+                errorState.className = 'error-state';
+
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'error-message';
+                errorMsg.textContent = 'Error loading posts';
+
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'retry-btn';
+                retryBtn.textContent = 'Try Again';
+                retryBtn.onclick = loadRecentPosts;
+
+                errorState.appendChild(errorMsg);
+                errorState.appendChild(retryBtn);
+                recentPostsContainer.appendChild(errorState);
+            }
+        }
+
+        // Load archives
+        async function loadArchives() {
+            try {
+                const response = await fetch('/api/posts/archives');
+                const archives = await response.json();
+                
+                const archivesContainer = document.getElementById('archives');
+                archivesContainer.textContent = ''; // Clear existing content
+
+                Object.entries(archives).forEach(([year, months]) => {
+                    const archiveCard = document.createElement('div');
+                    archiveCard.className = 'archive-card';
+
+                    const yearTitle = document.createElement('h4');
+                    yearTitle.textContent = year;
+                    archiveCard.appendChild(yearTitle);
+
+                    Object.entries(months).forEach(([month, count]) => {
+                        const monthDiv = document.createElement('div');
+                        monthDiv.className = 'archive-month';
+
+                        const monthLink = document.createElement('a');
+                        monthLink.href = `/index.html?year=${year}&month=${month}`;
+                        
+                        const monthText = document.createTextNode(`${month} `);
+                        monthLink.appendChild(monthText);
+
+                        const countSpan = document.createElement('span');
+                        countSpan.className = 'post-count';
+                        countSpan.textContent = `(${count})`;
+                        monthLink.appendChild(countSpan);
+
+                        monthDiv.appendChild(monthLink);
+                        archiveCard.appendChild(monthDiv);
+                    });
+
+                    archivesContainer.appendChild(archiveCard);
+                });
+            } catch (error) {
+                console.error('Error loading archives:', error);
+            }
+        }
+
+        // Search posts
+        async function searchPosts() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            try {
+                const response = await fetch(`/api/posts/search?q=${encodeURIComponent(query)}`);
+                const posts = await response.json();
+                
+                const recentPostsContainer = document.getElementById('recentPosts');
+                recentPostsContainer.textContent = ''; // Clear existing content
+
+                if (posts.length === 0) {
+                    const noResults = document.createElement('p');
+                    noResults.textContent = 'No posts found matching your search.';
+                    recentPostsContainer.appendChild(noResults);
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+
+                    const meta = document.createElement('div');
+                    meta.className = 'post-meta';
+                    meta.textContent = `${post.category.name} | ${formatDate(post.createdAt)}`;
+
+                    const title = document.createElement('h3');
+                    title.textContent = post.title;
+
+                    const excerpt = document.createElement('p');
+                    excerpt.className = 'post-excerpt';
+                    excerpt.textContent = post.excerpt || post.content.substring(0, 150) + '...';
+
+                    const link = document.createElement('a');
+                    link.href = `/index.html?post=${post.slug}`;
+                    link.className = 'btn';
+                    link.textContent = 'Read More';
+
+                    postCard.appendChild(meta);
+                    postCard.appendChild(title);
+                    postCard.appendChild(excerpt);
+                    postCard.appendChild(link);
+
+                    recentPostsContainer.appendChild(postCard);
+                });
+            } catch (error) {
+                console.error('Error searching posts:', error);
+            }
+        }
+
+        // Load all data
+        async function loadData() {
+            await Promise.all([
+                loadCategories(),
+                loadRecentPosts(),
+                loadArchives()
+            ]);
+        }
+
+        // Initialize
+        checkAuth();
+        loadData();
+
+        // Add search on enter key
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchPosts();
+            }
+        });
+    </script>
+</body>
+</html>
